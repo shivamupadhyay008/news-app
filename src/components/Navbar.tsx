@@ -22,12 +22,15 @@ const SettingsIcon = styled.div`
   cursor: pointer;
   color: black;
 `;
+interface NavProps {
+  setPrefDrawer: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-const Navbar: React.FC = () => {
+const Navbar: React.FC<NavProps> = ({ setPrefDrawer }) => {
   return (
     <NavbarContainer>
-      <Logo src={LogoUrl} alt="Innoscripta"/>
-      <SettingsIcon>
+      <Logo src={LogoUrl} alt="Innoscripta" />
+      <SettingsIcon onClick={()=>setPrefDrawer(true)}>
         <FaCog />
       </SettingsIcon>
     </NavbarContainer>

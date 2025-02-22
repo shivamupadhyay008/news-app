@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import styled from '@emotion/styled';
+import { useEffect, useRef, useState } from "react";
+import styled from "@emotion/styled";
 
 const MultiSelectContainer = styled.div`
   position: relative;
@@ -45,9 +45,6 @@ const InputCheckBox = styled.input`
   margin-right: 0.5rem;
 `;
 
-
-
-
 interface MultiSelectProps {
   options: string[];
   selected: string[];
@@ -64,30 +61,31 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  
   const handleToggle = (option: string) => {
     const newSelected = selected.includes(option)
-    ? selected.filter((item) => item !== option)
-    : [...selected, option];
-    console.log(newSelected);
-    
+      ? selected.filter((item) => item !== option)
+      : [...selected, option];
+
     onChange(newSelected);
   };
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <MultiSelectContainer ref={containerRef}>
       <MultiSelectButton type="button" onClick={() => setIsOpen(!isOpen)}>
-        {selected.length > 0 ? selected?.join(',') : placeholder}
+        {selected.length > 0 ? selected?.join(",") : placeholder}
       </MultiSelectButton>
       {isOpen && (
         <MultiSelectDropdown>

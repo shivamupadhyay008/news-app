@@ -1,62 +1,83 @@
 import { useEffect, useState } from "react";
 import { Global } from "@emotion/react";
-import styled from "@emotion/styled";
 import { useDispatch, useSelector } from "react-redux";
 
 import { SearchFilter } from "./components/SearchFilter";
 import { ArticleList } from "./components/ArticleList";
-import { globalStyles } from "./styles/GlobalStyles";
-import { Filters, RootState } from "./types/news";
+import { Container, globalStyles, Loading } from "./styles/GlobalStyles";
+import { Filters, RootState, UserPreferences } from "./types/news";
 import { fetchFilteredNews } from "./thunks/articleThunk";
 import Navbar from "./components/Navbar";
 import { initFilterState } from "./utils/constants";
-
-const Container = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  @media (max-width: 768px) {
-    padding: 1rem;
-  }
-`;
-
-const Loading = styled.p`
-  text-align: center;
-  font-size: 1.2rem;
-  color: #666;
-`;
+import { Preferences } from "./components/Preferences";
+import { getPreferencesFromStorage, setPreferencesToStorage } from "./utils";
+import { UnknownAction } from "@reduxjs/toolkit";
 
 function App() {
   const [filters, setFilters] = useState<Filters>(initFilterState);
+  const [prefDrawer, setPrefDrawer] = useState<boolean>(false);
+  const [prefs, setPrefs] = useState<UserPreferences>({
+    source: "NEWSAPI",
+    category: "",
+  });
   const { articles, isLoading } = useSelector(
     (state: RootState) => state.articles
   );
   const dispatch = useDispatch();
 
-  const searchArticles = () => dispatch(fetchFilteredNews(filters) as any);
+  const searchArticles = () =>
+    dispatch(fetchFilteredNews(filters) as unknown as UnknownAction);
 
   const clearFilters = () => setFilters(initFilterState);
+  const handlePreferences = (preferences: UserPreferences) => {
+    setPreferencesToStorage(preferences);
+    dispatch(
+      fetchFilteredNews({
+        ...filters,
+        ...preferences,
+      }) as unknown as UnknownAction
+    );
+  };
 
   useEffect(() => {
-    dispatch(fetchFilteredNews(filters) as any);
-  }, [dispatch]);
+    const prefs = getPreferencesFromStorage();
+    if (prefs) {
+      setFilters((state) => ({ ...state, ...prefs }));
+      setPrefs(prefs);
+    }
+    dispatch(
+      fetchFilteredNews({ ...filters, ...prefs }) as unknown as UnknownAction
+    );
+  }, []);
 
   return (
     <>
       <Global styles={globalStyles} />
-      <Navbar />
+      <Navbar setPrefDrawer={setPrefDrawer} />
       <Container>
-        <SearchFilter
-          filters={filters}
-          setFilters={setFilters}
-          onSearch={searchArticles}
-          clearFilters={clearFilters}
-        />
-        {/* <Preferences onSave={getPersonalizedFeed} /> */}
-        {isLoading ? (
-          <Loading>Loading...</Loading>
+        <div>
+          <SearchFilter
+            filters={filters}
+            setFilters={setFilters}
+            onSearch={searchArticles}
+            clearFilters={clearFilters}
+          />
+
+          {isLoading ? (
+            <Loading>Loading...</Loading>
+          ) : (
+            <ArticleList articles={articles} />
+          )}
+        </div>
+        {prefDrawer ? (
+          <Preferences
+            prefs={prefs}
+            setPrefs={setPrefs}
+            setPrefDrawer={setPrefDrawer}
+            onSave={handlePreferences}
+          />
         ) : (
-          <ArticleList articles={articles} />
+          ""
         )}
       </Container>
     </>

@@ -21,9 +21,8 @@ export interface Article {
   }
   
   export interface UserPreferences {
-    sources: string[];
-    categories: string[];
-    authors: string[];
+    source: string;
+    category: string;
   }
 
 export interface ArticleStateType {
@@ -46,6 +45,46 @@ export interface NewsArticleResponseType {
   publishedAt: string;
   content: string;
 }
+export interface GuardianArticleResponseType {
+  id: string;
+  type: string;
+  sectionId: string;
+  sectionName: string;
+  webPublicationDate: string;
+  webTitle: string;
+  webUrl: string;
+  apiUrl: string;
+  isHosted: boolean;
+  pillarId: string;
+  pillarName: string;
+}
+interface Multimedia {
+  rank: number;
+  subtype: string;
+  caption: string | null;
+  credit: string | null;
+  type: string;
+  url: string;
+  height: number;
+  width: number;
+  legacy: {
+    xlarge: string;
+    xlargewidth: number;
+    xlargeheight: number;
+  };
+  subType: string;
+  crop_name: string;
+}
 
+export interface NYTArticleResponseType {
+  abstract: string;
+  web_url: string;
+  snippet: string;
+  lead_paragraph: string;
+  print_section: string;
+  print_page: number;
+  source: string;
+  multimedia: Multimedia[];
+}
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

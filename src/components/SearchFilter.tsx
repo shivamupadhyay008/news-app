@@ -3,6 +3,9 @@ import { FaFilter, FaSearch } from "react-icons/fa";
 import { MultiSelect } from "./common/MultiSelect";
 import { Filters } from "../types/news";
 import { useState } from "react";
+import { getFiltersCount } from "../utils";
+import { categories, source } from "../utils/constants";
+import { Button } from "../styles/GlobalStyles";
 
 const FilterContainer = styled.div`
   background: #fff;
@@ -15,8 +18,8 @@ const FilterContainer = styled.div`
 const SearchContainer = styled.div`
   display: flex;
   gap: 1rem;
-  margin-bottom: 1rem;
   flex-wrap: wrap;
+  margin-top: 1rem;
   @media (max-width: 768px) {
     flex-direction: column;
   }
@@ -35,20 +38,21 @@ const Input = styled.input`
   }
 `;
 
-const Button = styled.button`
-  padding: 0.75rem 1.5rem;
-  background: #007bff;
+const Badge = styled.span`
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #f00;
   color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background 0.3s;
-  &:hover {
-    background: #0056b3;
-  }
+  border-radius: 50%;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  transform: translate(50%, -50%);
+`;
+
+const Label = styled.label`
+  font-weight: bold;
+  display: block;
 `;
 
 interface SearchFilterProps {
@@ -65,10 +69,15 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
   clearFilters,
 }) => {
   const [openFilters, setOpenFilters] = useState<boolean>(false);
+  const [filterData, setFiltersData] = useState<number>(
+    getFiltersCount(filters)
+  );
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(filters);
+    setFiltersData(getFiltersCount(filters));
   };
+
   const handleCategoryChange = (selected: string[]) => {
     setFilters({ ...filters, category: selected.join(",") });
   };
@@ -76,9 +85,6 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
     setFilters({ ...filters, source: selected.join(",") });
   };
   const handleFilter = () => setOpenFilters((state) => !state);
-
-  const categories = ["General", "Business", "Sports", "Technology"];
-  const source = ["NEWSAPI", "NEW YORK TIMES", "THE Guardians"];
 
   return (
     <FilterContainer>
@@ -94,20 +100,26 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
         </Button>
         <Button type="button" onClick={handleFilter}>
           <FaFilter />
+          {filterData ? <Badge>{filterData}</Badge> : ""}
         </Button>
       </SearchContainer>
       {openFilters ? (
         <SearchContainer as="form" onSubmit={handleSubmit}>
+          <Label htmlFor='startDate'>Start date</Label>
           <Input
             type="date"
+            id="startDate"
             value={filters.dateFrom || ""}
             onChange={(e) =>
               setFilters({ ...filters, dateFrom: e.target.value })
             }
+            aria-label="Start Date"
             placeholder="Start Date"
           />
+          <Label htmlFor='endDate'>End date</Label>
           <Input
             type="date"
+            id="endDate"
             value={filters.dateTo || ""}
             onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
             placeholder="End Date"
@@ -125,7 +137,13 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
             placeholder="All Categories"
           />
           <Button type="submit">Apply</Button>
-          <Button type="button" onClick={clearFilters}>
+          <Button
+            type="button"
+            onClick={() => {
+              clearFilters();
+              setFiltersData(1);
+            }}
+          >
             Clear
           </Button>
         </SearchContainer>

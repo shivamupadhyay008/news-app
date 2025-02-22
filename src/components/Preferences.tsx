@@ -1,79 +1,70 @@
-import { useState } from 'react';
-import { UserPreferences } from '../types/news';
-import styled from '@emotion/styled';
-import { FaSave } from 'react-icons/fa';
-
-const PrefContainer = styled.div`
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-`;
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 1rem;
-  font-weight: bold;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-top: 0.5rem;
-`;
-
-const Button = styled.button`
-  padding: 0.75rem 1.5rem;
-  background: #28a745;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background 0.3s;
-  &:hover {
-    background: #218838;
-  }
-`;
+import { UserPreferences } from "../types/news";
+import { FaSave, FaTimes } from "react-icons/fa";
+import { categories, prefInit, source } from "../utils/constants";
+import { MultiSelect } from "./common/MultiSelect";
+import {
+  CancelButton,
+  GreenButton,
+  Header,
+  RedButton,
+  SidebarContainer,
+} from "../styles/GlobalStyles";
+import { resetPreferencesFromStorage } from "../utils";
 
 interface PreferencesProps {
   onSave: (prefs: UserPreferences) => void;
+  setPrefDrawer: React.Dispatch<React.SetStateAction<boolean>>;
+  prefs: UserPreferences;
+  setPrefs: React.Dispatch<React.SetStateAction<UserPreferences>>;
 }
 
-export const Preferences: React.FC<PreferencesProps> = ({ onSave }) => {
-  const [prefs, setPrefs] = useState<UserPreferences>({
-    sources: [],
-    categories: [],
-    authors: [],
-  });
+export const Preferences: React.FC<PreferencesProps> = ({
+  onSave,
+  setPrefDrawer,
+  prefs,
+  setPrefs,
+}) => {
+  const handleCategoryChange = (selected: string[]) => {
+    setPrefs({ ...prefs, category: selected.join(",") });
+  };
+  const handleSourceChange = (selected: string[]) => {
+    setPrefs({ ...prefs, source: selected.join(",") });
+  };
 
   const handleSave = () => onSave(prefs);
+  const handleClearPreferences = () => {
+    setPrefs(prefInit);
+    resetPreferencesFromStorage();
+    onSave(prefInit)
+  };
 
   return (
-    <PrefContainer>
-      <h3>Customize Your Feed</h3>
-      <Label>
-        Sources (comma-separated):
-        <Input
-          type="text"
-          onChange={(e) => setPrefs({ ...prefs, sources: e.target.value.split(',') })}
-        />
-      </Label>
-      <Label>
-        Categories (comma-separated):
-        <Input
-          type="text"
-          onChange={(e) => setPrefs({ ...prefs, categories: e.target.value.split(',') })}
-        />
-      </Label>
-      <Button onClick={handleSave}>
+    <SidebarContainer>
+      <Header>
+        <h4>Customize Your Feed</h4>
+        <CancelButton onClick={() => setPrefDrawer(false)}>
+          <FaTimes />
+        </CancelButton>
+      </Header>
+      <MultiSelect
+        options={categories}
+        selected={prefs.category?.split(",").filter(Boolean) || []}
+        onChange={handleCategoryChange}
+        placeholder="All Categories"
+      />
+      <br />
+      <MultiSelect
+        options={source}
+        selected={prefs.source?.split(",").filter(Boolean) || []}
+        onChange={handleSourceChange}
+        placeholder="All Categories"
+      />
+      <br />
+      <GreenButton onClick={handleSave}>
         <FaSave /> Save Preferences
-      </Button>
-    </PrefContainer>
+      </GreenButton>
+      <br />
+      <RedButton onClick={handleClearPreferences}>Clear Preferences</RedButton>
+    </SidebarContainer>
   );
 };
