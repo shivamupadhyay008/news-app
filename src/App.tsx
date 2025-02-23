@@ -18,7 +18,7 @@ function App() {
   const [filters, setFilters] = useState<Filters>(initFilterState);
   const [prefDrawer, setPrefDrawer] = useState<boolean>(false);
   const [prefs, setPrefs] = useState<UserPreferences>({
-    source: "NEWSAPI",
+    source: "NEW YORK TIMES",
   });
   const { articles, isLoading } = useSelector(
     (state: RootState) => state.articles
