@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Global } from "@emotion/react";
 import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
 
 import { SearchFilter } from "./components/SearchFilter";
 import { ArticleList } from "./components/ArticleList";
@@ -18,7 +19,6 @@ function App() {
   const [prefDrawer, setPrefDrawer] = useState<boolean>(false);
   const [prefs, setPrefs] = useState<UserPreferences>({
     source: "NEWSAPI",
-    category: "",
   });
   const { articles, isLoading } = useSelector(
     (state: RootState) => state.articles
@@ -28,7 +28,15 @@ function App() {
   const searchArticles = () =>
     dispatch(fetchFilteredNews(filters) as unknown as UnknownAction);
 
-  const clearFilters = () => setFilters(initFilterState);
+  const clearFilters = () => {
+    setFilters(initFilterState);
+    dispatch(
+      fetchFilteredNews({
+        ...filters,
+        ...prefs,
+      }) as unknown as UnknownAction
+    );
+  };
   const handlePreferences = (preferences: UserPreferences) => {
     setPreferencesToStorage(preferences);
     dispatch(
@@ -52,6 +60,7 @@ function App() {
 
   return (
     <>
+      <ToastContainer />
       <Global styles={globalStyles} />
       <Navbar setPrefDrawer={setPrefDrawer} />
       <Container>

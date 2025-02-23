@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { UserPreferences } from "../types/news";
 import { FaSave, FaTimes } from "react-icons/fa";
 import { categories, prefInit, source } from "../utils/constants";
@@ -31,11 +32,17 @@ export const Preferences: React.FC<PreferencesProps> = ({
     setPrefs({ ...prefs, source: selected.join(",") });
   };
 
-  const handleSave = () => onSave(prefs);
-  const handleClearPreferences = () => {
+  const handleSave = () => {
+    onSave(prefs);
+    setPrefDrawer(false);
+    toast("Preferences saved successfully");
+  };
+  const handleClearPreferences = async () => {
+    await resetPreferencesFromStorage();
     setPrefs(prefInit);
-    resetPreferencesFromStorage();
-    onSave(prefInit)
+    setPrefDrawer(false);
+    onSave(prefInit);
+    toast("Preferences Cleared successfully");
   };
 
   return (
@@ -43,7 +50,7 @@ export const Preferences: React.FC<PreferencesProps> = ({
       <Header>
         <h4>Customize Your Feed</h4>
         <CancelButton onClick={() => setPrefDrawer(false)}>
-          <FaTimes />
+          <FaTimes color="white" />
         </CancelButton>
       </Header>
       <MultiSelect

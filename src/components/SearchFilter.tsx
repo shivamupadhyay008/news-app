@@ -20,6 +20,7 @@ const SearchContainer = styled.div`
   gap: 1rem;
   flex-wrap: wrap;
   margin-top: 1rem;
+  margin-bottom: 1.5rem;
   @media (max-width: 768px) {
     flex-direction: column;
   }
@@ -50,9 +51,16 @@ const Badge = styled.span`
   transform: translate(50%, -50%);
 `;
 
+const InputContainer = styled.div`
+  position: relative;
+`;
+
 const Label = styled.label`
   font-weight: bold;
   display: block;
+  font-size: 0.75rem;
+  position: absolute;
+  top: -17px;
 `;
 
 interface SearchFilterProps {
@@ -105,25 +113,31 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
       </SearchContainer>
       {openFilters ? (
         <SearchContainer as="form" onSubmit={handleSubmit}>
-          <Label htmlFor='startDate'>Start date</Label>
-          <Input
-            type="date"
-            id="startDate"
-            value={filters.dateFrom || ""}
-            onChange={(e) =>
-              setFilters({ ...filters, dateFrom: e.target.value })
-            }
-            aria-label="Start Date"
-            placeholder="Start Date"
-          />
-          <Label htmlFor='endDate'>End date</Label>
-          <Input
-            type="date"
-            id="endDate"
-            value={filters.dateTo || ""}
-            onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-            placeholder="End Date"
-          />
+          <InputContainer>
+            <Label htmlFor="startDate">Start date</Label>
+            <Input
+              type="date"
+              id="startDate"
+              value={filters.dateFrom || ""}
+              onChange={(e) =>
+                setFilters({ ...filters, dateFrom: e.target.value })
+              }
+              aria-label="Start Date"
+              placeholder="Start Date"
+            />
+          </InputContainer>
+          <InputContainer>
+            <Label htmlFor="endDate">End date</Label>
+            <Input
+              type="date"
+              id="endDate"
+              value={filters.dateTo || ""}
+              onChange={(e) =>
+                setFilters({ ...filters, dateTo: e.target.value })
+              }
+              placeholder="End Date"
+            />
+          </InputContainer>
           <MultiSelect
             options={categories}
             selected={filters.category?.split(",").filter(Boolean) || []}

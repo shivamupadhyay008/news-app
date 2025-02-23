@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import {
   fetchGuardianArticle,
   fetchNewsArticle,
@@ -34,6 +35,13 @@ export const fetchFilteredNews =
 
       dispatch(fetchArticleSuccess(response));
     } catch (error: unknown) {
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message ||
+        "Something went wrong please try again after sometime";
+
+      toast(errorMessage);
+
       if (error instanceof Error) {
         dispatch(fetchArticleFailure(error.message));
       } else {

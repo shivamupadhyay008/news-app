@@ -5,4 +5,4 @@ export const initFilterState = {
 
 export const categories = ["General", "Business", "Sports", "Technology"];
 export const source = ["NEWSAPI", "NEW YORK TIMES", "THE Guardians"];
-export const prefInit = { source: "NEWSAPI", category: "" };
+export const prefInit = { source: "NEWSAPI" };

@@ -1,5 +1,7 @@
-import { Article } from '../types/news';
-import styled from '@emotion/styled';
+import { Article } from "../types/news";
+import styled from "@emotion/styled";
+import { ImageWithFallback } from "./common/imageWithFallback";
+import fallbackImage from "../assets/fallback.png";
 
 const ListContainer = styled.div`
   display: grid;
@@ -21,17 +23,9 @@ const ArticleCard = styled.div`
   }
 `;
 
-const ImageCard = styled.img`
-  background-size: cover;
-  background-position: center;
-  width: 100%;
-  height: 150px;
-  border-radius: 6px;
-`;
-
 const Author = styled.p`
-font-size: 1rem;
-`
+  font-size: 1rem;
+`;
 
 const Title = styled.h3`
   font-size: 1.25rem;
@@ -59,22 +53,35 @@ interface ArticleListProps {
 }
 
 export const ArticleList: React.FC<ArticleListProps> = ({ articles }) => (
-  <ListContainer>
-    {articles?.map((article) => (
-      <ArticleCard key={article.id}>
-        <ImageCard src={article.image} alt={article.title}/>
-        <Title>{article.title}</Title>
-        <Description>{article.description}</Description>
-        <Author>
-          {article.author && `By ${article.author}`}
-          {article.source?.name && ` • ${article.source.name}`}
-          {article.publishedAt && ` • ${new Date(article.publishedAt).toLocaleDateString()}`}
-          {article.category && ` • ${article.category}`}
-        </Author>
-        <Link href={article.url} target="_blank" rel="noopener noreferrer">
-          Read more
-        </Link>
-      </ArticleCard>
-    ))}
-  </ListContainer>
+  <>
+    {articles?.length === 0 ? (
+      <h2>No articles found. Please adjust your search criteria.</h2>
+    ) : (
+      ""
+    )}
+
+    <ListContainer>
+      {articles?.map((article) => (
+        <ArticleCard key={article.id}>
+          <ImageWithFallback
+            initialSrc={article.image}
+            alt={article.title}
+            fallbackSrc={fallbackImage}
+          />
+          <Title>{article?.title?.slice(0, 150)}...</Title>
+          <Description>{article.description?.slice(0, 250)}...</Description>
+          <Author>
+            {article.author && `By ${article.author}`}
+            {article.source?.name && ` • ${article.source.name}`}
+            {article.publishedAt &&
+              ` • ${new Date(article.publishedAt).toLocaleDateString()}`}
+            {article.category && ` • ${article.category}`}
+          </Author>
+          <Link href={article.url} target="_blank" rel="noopener noreferrer">
+            Read more
+          </Link>
+        </ArticleCard>
+      ))}
+    </ListContainer>
+  </>
 );

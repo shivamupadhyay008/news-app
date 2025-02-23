@@ -22,7 +22,7 @@ export interface Article {
   
   export interface UserPreferences {
     source: string;
-    category: string;
+    category?: string;
   }
 
 export interface ArticleStateType {
